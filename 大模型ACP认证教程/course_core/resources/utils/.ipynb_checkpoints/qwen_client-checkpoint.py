@@ -19,28 +19,26 @@ def _get_client():
 
 
 
-def chat(prompt, system_prompt=DEFAULT_SYSTEM_PROMPT, model=DEFAULT_MODEL):
+def chat(prompt = None, history = None, system_prompt=DEFAULT_SYSTEM_PROMPT, model=DEFAULT_MODEL, stream=False):
+    messages=[
+        {"role": "system", "content": system_prompt}
+    ]
+    
+    if prompt is not None:
+        messages.append({"role": "user", "content": prompt})
+        
+    if history is not None:
+        messages.extend(history)
+    
     client = _get_client()
-    response = client.chat.completions.create(model=model, messages=[
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": prompt}
-    ])
-    return response.choices[0].message.content
+    response = client.chat.completions.create(model=model, messages=messages, stream=stream)
+    return response
 
 
 
 
 def init_api_key():
-    print(os.getcwd())
-    # 从当前目录(course_core/utils)向上逐级找，直到找到含 config/load_key.py 的 course_core
-    current = Path.cwd()
-    current.absolute = "/mnt/workspace/acp_learning_myself/aliyun_acp_learning/大模型ACP认证教程/course_core"
-    while not (current / "config" / "load_key.py").exists():
-        if current == current.parent:
-            raise FileNotFoundError("向上找不到 course_core（缺少 config/load_key.py）")
-        current = current.parent
-
-
+    current = Path('/mnt/workspace/acp_learning_myself/aliyun_acp_learning/大模型ACP认证教程/course_core')
     os.chdir(current)
     sys.path.insert(0, str(current))
     print(f"已切换到课程公共模块目录：{current}")
