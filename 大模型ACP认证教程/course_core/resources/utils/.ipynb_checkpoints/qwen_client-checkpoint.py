@@ -19,7 +19,7 @@ def _get_client():
 
 
 
-def chat(prompt = None, history = None, system_prompt=DEFAULT_SYSTEM_PROMPT, model=DEFAULT_MODEL, stream=False):
+def chat(prompt = None, history = None, system_prompt=DEFAULT_SYSTEM_PROMPT, model=DEFAULT_MODEL, stream=False, temperature=DEFAULT_TEMPERATURE, top_p=DEFAULT_TOP_P):
     messages=[
         {"role": "system", "content": system_prompt}
     ]
@@ -31,7 +31,7 @@ def chat(prompt = None, history = None, system_prompt=DEFAULT_SYSTEM_PROMPT, mod
         messages.extend(history)
     
     client = _get_client()
-    response = client.chat.completions.create(model=model, messages=messages, stream=stream)
+    response = client.chat.completions.create(model=model, messages=messages, stream=stream, temperature=temperature, top_p=top_p, extra_body={"enable_thinking": False})
     return response
 
 
